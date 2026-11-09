@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlix Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --primary: #E50914;
+            --glow: rgba(229, 9, 20, 0.5);
+            --text-main: #FFFFFF;
+            --accent-green: #46d369;
+        }
+
+        body.theme-cyberpunk {
+            --bg-color: #0d0221;
+            --card-bg: #0f084b;
+            --primary: #00f0ff;
+            --glow: rgba(0, 240, 255, 0.6);
+            --accent-green: #ff007f;
+        }
+
+        body.theme-emerald {
+            --bg-color: #061412;
+            --card-bg: #112a25;
+            --primary: #10b981;
+            --glow: rgba(16, 185, 129, 0.5);
+            --accent-green: #34d399;
+        }
+
+        body.theme-gold {
+            --bg-color: #12100e;
+            --card-bg: #2b2621;
+            --primary: #f59e0b;
+            --glow: rgba(245, 158, 11, 0.5);
+            --accent-green: #fbbf24;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.4s ease;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(11, 12, 16, 0.6);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-decoration: none;
+            text-shadow: 0 0 12px var(--glow);
+            transition: color 0.4s ease;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-select {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .theme-select option {
+            background: #111;
+            color: #fff;
+        }
+
+        .user-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--glow);
+            transition: transform 0.2s, background-color 0.4s;
+        }
+
+        .user-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .hero {
+            position: relative;
+            height: 75vh;
+            background: linear-gradient(to top, var(--bg-color) 0%, transparent 60%),
+                        linear-gradient(to right, rgba(11, 12, 16, 0.95) 15%, transparent 65%),
+                        radial-gradient(circle at 70% 30%, #004d61 0%, var(--bg-color) 80%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+        }
+
+        .hero-content {
+            max-width: 650px;
+            margin-top: 40px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            line-height: 1.1;
+            background: linear-gradient(180deg, #FFFFFF 0%, #A5A5A5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            color: #b0b3b8;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #FFFFFF 0%, #E0E0E0 100%);
+            color: #000;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.35);
+        }
+
+        .main-container {
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+            padding: 0 50px 60px;
+        }
+
+        .row-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .movie-slider {
+            display: flex;
+            gap: 22px;
+            overflow-x: auto;
+            padding: 15px 5px 25px 5px;
+            margin-bottom: 30px;
+        }
+
+        .movie-slider::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .movie-slider::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        .movie-card {
+            flex: 0 0 260px;
+            height: 146px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .movie-card svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px var(--glow);
+        }
+
+        .movie-card:hover svg {
+            transform: scale(1.08);
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.6);
+            opacity: 0;
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px var(--glow);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .movie-card:hover .play-icon {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .card-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(11, 12, 16, 0.98) 20%, rgba(11, 12, 16, 0.6) 70%, transparent);
+            padding: 12px;
+            z-index: 3;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: var(--accent-green);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .auth-box, .movie-modal-box {
+            background: #16181e;
+            padding: 30px;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .auth-box h2, .movie-modal-box h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .auth-form input:focus {
+            border-color: var(--primary);
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--glow);
+        }
+
+        .toggle-auth {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #aaa;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .toggle-auth span {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #aaa;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .movie-modal-desc {
+            font-size: 14px;
+            color: #b0b3b8;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .movie-modal-meta {
+            font-size: 13px;
+            color: var(--accent-green);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .watch-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 0 15px var(--glow);
+            transition: transform 0.2s;
+        }
+
+        .watch-btn:hover {
+            transform: scale(1.03);
+        }
+
+        .rate-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .rate-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .rate-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .episodes-section {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .episodes-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .episodes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .episode-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 14px;
+            transition: background 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .episode-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+        }
+
+        .episode-play-icon {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            nav, .hero, .main-container { padding-left: 20px; padding-right: 20px; }
+            .hero-title { font-size: 36px; }
+        }
+    </style>
+</head>
+<body id="body">
+
+    <nav>
+        <a href="#" class="logo">STREAMFLIX</a>
+        <div class="nav-controls">
+            <select class="theme-select" onchange="changeTheme(this.value)">
+                <option value="default">🔴 Netflix Red</option>
+                <option value="theme-cyberpunk">🔵 Cyberpunk Neon</option>
+                <option value="theme-emerald">🟢 Emerald Green</option>
+                <option value="theme-gold">🟡 Royal Gold</option>
+            </select>
+            <button class="user-btn" id="authBtn" onclick="openAuthModal()">Zaloguj się</button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-badge">POLECANE DZISIAJ</span>
+            <h1 class="hero-title">Serial: Kibic</h1>
+            <p class="hero-description">Wciągający polski serial ukazujący kulisy świata kibiców, trudne wybory i lojalność ponad wszystko.</p>
+            <button onclick="openSeriesGUI()" class="btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg> Wybierz Odcinek
+            </button>
+        </div>
+    </section>
+
+    <div class="main-container">
+        <h2 class="row-title">📺 Seriale</h2>
+        <div class="movie-slider" id="seriesSlider"></div>
+
+        <h2 class="row-title">🔥 Hity Kinowe</h2>
+        <div class="movie-slider" id="movieSlider"></div>
+    </div>
+
+    <div class="modal-overlay" id="movieModal">
+        <div class="movie-modal-box">
+            <span class="close-modal" onclick="closeMovieGUI()">&times;</span>
+            <h2 id="modalTitle">Tytuł</h2>
+            <div class="movie-modal-meta" id="modalMeta">96% Dopasowania • HD</div>
+            <p class="movie-modal-desc" id="modalDesc">Opis</p>
+            
+            <div class="modal-actions">
+                <a href="#" id="modalLink" target="_blank" class="watch-btn">▶ Oglądaj teraz</a>
+                <div class="rate-group">
+                    <button class="rate-btn" onclick="vote('up')">👍 <span id="likesCount">0</span></button>
+                    <button class="rate-btn" onclick="vote('down')">👎 <span id="dislikesCount">0</span></button>
+                </div>
+            </div>
+
+            <div class="episodes-section" id="episodesSection" style="display: none;">
+                <div class="episodes-title">Wybierz odcinek:</div>
+                <div class="episodes-list" id="episodesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="authModal">
+        <div class="auth-box">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <div id="loginForm" class="auth-form">
+                <h2>Zaloguj się</h2>
+                <input type="text" id="loginUsername" placeholder="Nazwa użytkownika">
+                <input type="password" id="loginPassword" placeholder="Hasło">
+                <button onclick="handleLogin()">Zaloguj</button>
+                <div class="toggle-auth" onclick="toggleAuthMode('register')">Nie masz konta? <span>Zarejestruj się</span></div>
+            </div>
+
+            <div id="registerForm" class="auth-form" style="display: none;">
+                <h2>Zarejestruj się</h2>
+                <input type="text" id="regUsername" placeholder="Nazwa użytkownika">
+                <input type="password" id="regPassword" placeholder="Hasło">
+                <input type="number" id="regBirthYear" placeholder="Rok urodzenia (np. 2000)">
+                <button onclick="handleRegister()">Stwórz konto</button>
+                <div class="toggle-auth" onclick="toggleAuthMode('login')">Masz już konto? <span>Zaloguj się</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const kibicShow = {
+            title: "Kibic (Serial)",
+            desc: "Wciągający polski serial ukazujący kulisy świata kibiców, trudne wybory i lojalność ponad wszystko. Wybierz odcinek poniżej, aby rozpocząć seans.",
+            meta: "Sezon 1 • 5 Odcinków • HD",
+            bg: "#1f2421",
+            text: "KIBIC SERIAL",
+            episodes: [
+                { name: "Odcinek 1", link: "https://tiny.pl/z0y574k3k" },
+                { name: "Odcinek 2", link: "https://tiny.pl/rpw13q7fq" },
+                { name: "Odcinek 3", link: "https://tiny.pl/nwnwb_0pj" },
+                { name: "Odcinek 4", link: "https://tiny.pl/5n7s_w0vd" },
+                { name: "Odcinek 5", link: "https://tiny.pl/mtzw1xmcr" }
+            ]
+        };
+
+        const moviesData = [
+            { title: "Joker", desc: "Strudzony komik Arthur Fleck popada w obłęd i staje się anarchistycznym przestępcą znanym jako Joker.", meta: "96% Dopasowania • 4K", link: "https://tiny.pl/347_67kgk", bg: "#5a0000", text: "JOKER" },
+            { title: "Pieprzyć Mickiewicza", desc: "Grupa zbuntowanych licealistów trafia pod skrzydła nietypowego nauczyciela polskiego.", meta: "94% Dopasowania • HD", link: "https://tiny.pl/71bmv8kj5", bg: "#14213d", text: "MICKIEWICZ" },
+            { title: "Avatar: Istota Wody", desc: "Jake Sully i Neytiri walczą o przetrwanie i bezpieczeństwo swoich dzieci na Pandorze.", meta: "99% Dopasowania • 4K", link: "https://tiny.pl/y68g7txfj", bg: "#0077b6", text: "AVATAR 2" },
+            { title: "Avengers: Koniec gry", desc: "Ostatnia faza bitwy Avengers z potężnym Thanosem o losy całego wszechświata.", meta: "98% Dopasowania • 4K", link: "https://tiny.pl/4hv3qhyhs", bg: "#4a0e17", text: "AVENGERS" },
+            { title: "Titanic", desc: "Młodzi arystokratka i artysta zakochują się na pokładzie pechowego statku.", meta: "95% Dopasowania • HD", link: "https://tiny.pl/33dtw9z8x", bg: "#1d3557", text: "TITANIC" },
+            { title: "Władca Pierścieni", desc: "Epicka podróż drużyny pierścienia, by zniszczyć jedyny pierścień w ogniu Przeznaczenia.", meta: "99% Dopasowania • 4K", link: "https://tiny.pl/08tc0q4w7", bg: "#7f5539", text: "LOTR" },
+            { title: "Shazam!", desc: "Nastolatek zyskuje moc wypowiadania magicznego słowa i zmieniania się w dorosłego superbohatera.", meta: "91% Dopasowania • HD", link: "https://tiny.pl/dgpsw3jtt", bg: "#9e2a2b", text: "SHAZAM!" },
+            { title: "Shazam! Gniew Bogów", desc: "Shazam i jego rodzina stają do walki z córkami Atlasa.", meta: "90% Dopasowania • HD", link: "https://tiny.pl/f51-6hyf8", bg: "#3a86ff", text: "SHAZAM 2" },
+            { title: "Tokyo Drift", desc: "Amerykański nastolatek zanurza się w podziemnym świecie japońskiego driftu.", meta: "93% Dopasowania • HD", link: "https://tiny.pl/gky91j9qg", bg: "#fb5607", text: "TOKYO DRIFT" },
+            { title: "Shrek", desc: "Zrzędliwy ogr wyrusza z gadającym osłem na ratunek księżniczce.", meta: "99% Dopasowania • HD", link: "https://tiny.pl/wzzn78vq8", bg: "#55a630", text: "SHREK" }
+        ];
+
+        let activeItem = null;
+
+        function renderSliders() {
+            const seriesSlider = document.getElementById('seriesSlider');
+            seriesSlider.innerHTML = '';
+            
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.onclick = openSeriesGUI;
+            card.innerHTML = `
+                <div class="play-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+                <svg viewBox="0 0 240 135">
+                    <defs><linearGradient id="grad_kibic" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${kibicShow.bg}"/><stop offset="100%" stop-color="#0b0c10"/></linearGradient></defs>
+                    <rect width="240" height="135" fill="url(#grad_kibic)"/>
+                    <text x="120" y="70" fill="#fff" font-size="18" font-weight="900" text-anchor="middle">${kibicShow.text}</text>
+                </svg>
+                <div class="card-info">
+                    <div class="card-title">${kibicShow.title}</div>
+                    <div class="card-meta">${kibicShow.meta}</div>
+                </div>
+            `;
+            seriesSlider.appendChild(card);
+
+            const movieSlider = document.getElementById('movieSlider');
+            movieSlider.innerHTML = '';
+            moviesData.forEach((item, index) => {
+                const mCard = document.createElement('div');
+                mCard.className = 'movie-card';
+                mCard.onclick = () => openMovieGUI(item);
+                mCard.innerHTML = `
+                    <div class="play-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+                    <svg viewBox="0 0 240 135">
+                        <defs><linearGradient id="grad_m_${index}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${item.bg}"/><stop offset="100%" stop-color="#0b0c10"/></linearGradient></defs>
+                        <rect width="240" height="135" fill="url(#grad_m_${index})"/>
+                        <text x="120" y="70" fill="#fff" font-size="18" font-weight="900" text-anchor="middle">${item.text}</text>
+                    </svg>
+                    <div class="card-info">
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-meta">${item.meta}</div>
+                    </div>
+                `;
+                movieSlider.appendChild(mCard);
+            });
+        }
+
+        function openSeriesGUI() {
+            activeItem = kibicShow;
+            document.getElementById('modalTitle').innerText = kibicShow.title;
+            document.getElementById('modalMeta').innerText = kibicShow.meta;
+            document.getElementById('modalDesc').innerText = kibicShow.desc;
+
+            document.getElementById('modalLink').style.display = 'none';
+
+            const epSection = document.getElementById('episodesSection');
+            const epList = document.getElementById('episodesList');
+            epList.innerHTML = '';
+            
+            kibicShow.episodes.forEach(ep => {
+                const item = document.createElement('a');
+                item.className = 'episode-item';
+                item.href = ep.link;
+                item.target = '_blank';
+                item.innerHTML = `<span>${ep.name}</span><span class="episode-play-icon">▶ Odtwórz</span>`;
+                epList.appendChild(item);
+            });
+
+            epSection.style.display = 'block';
+
+            let votes = JSON.parse(localStorage.getItem('votes_' + kibicShow.title) || '{"likes": 210, "dislikes": 8}');
+            document.getElementById('likesCount').innerText = votes.likes;
+            document.getElementById('dislikesCount').innerText = votes.dislikes;
+
+            document.getElementById('movieModal').style.display = 'flex';
+        }
+
+        function openMovieGUI(item) {
+            activeItem = item;
+            document.getElementById('modalTitle').innerText = item.title;
+            document.getElementById('modalMeta').innerText = item.meta;
+            document.getElementById('modalDesc').innerText = item.desc;
+            
+            const watchBtn = document.getElementById('modalLink');
+            watchBtn.href = item.link;
+            watchBtn.style.display = 'block';
+
+            document.getElementById('episodesSection').style.display = 'none';
+
+            let votes = JSON.parse(localStorage.getItem('votes_' + item.title) || '{"likes": 124, "dislikes": 5}');
+            document.getElementById('likesCount').innerText = votes.likes;
+            document.getElementById('dislikesCount').innerText = votes.dislikes;
+
+            document.getElementById('movieModal').style.display = 'flex';
+        }
+
+        function closeMovieGUI() {
+            document.getElementById('movieModal').style.display = 'none';
+        }
+
+        function vote(type) {
+            if (!activeItem) return;
+            let votes = JSON.parse(localStorage.getItem('votes_' + activeItem.title) || '{"likes": 124, "dislikes": 5}');
+            
+            if (type === 'up') votes.likes++;
+            if (type === 'down') votes.dislikes++;
+
+            localStorage.setItem('votes_' + activeItem.title, JSON.stringify(votes));
+            document.getElementById('likesCount').innerText = votes.likes;
+            document.getElementById('dislikesCount').innerText = votes.dislikes;
+        }
+
+        function changeTheme(themeName) {
+            const body = document.getElementById('body');
+            body.className = '';
+            if (themeName !== 'default') {
+                body.classList.add(themeName);
+            }
+        }
+
+        let currentUser = localStorage.getItem('currentUser');
+
+        function updateUI() {
+            const authBtn = document.getElementById('authBtn');
+            if (currentUser) {
+                authBtn.innerText = `Witaj, ${currentUser}! (Wyloguj)`;
+                authBtn.onclick = handleLogout;
+            } else {
+                authBtn.innerText = 'Zaloguj się';
+                authBtn.onclick = openAuthModal;
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById('authModal').style.display = 'flex';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        function toggleAuthMode(mode) {
+            if (mode === 'register') {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            } else {
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'block';
+            }
+        }
+
+        function handleRegister() {
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const birthYear = document.getElementById('regBirthYear').value;
+
+            if (!username || !password || !birthYear) {
+                alert('Wypełnij wszystkie pola!');
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users') || '{}');
+            if (users[username]) {
+                alert('Użytkownik już istnieje!');
+                return;
+            }
+
+            users[username] = { password, birthYear };
+            localStorage.setItem('users', JSON.stringify(users));
+            currentUser = username;
+            localStorage.setItem('currentUser', username);
+
+            alert('Konto utworzone pomyślnie!');
+            closeAuthModal();
+            updateUI();
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            let users = JSON.parse(localStorage.getItem('users') || '{}');
+
+            if (!users[username] || users[username].password !== password) {
+                alert('Błędne dane logowania!');
+                return;
+            }
+
+            currentUser = username;
+            localStorage.setItem('currentUser', username);
+            alert('Zalogowano!');
+            closeAuthModal();
+            updateUI();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            updateUI();
+        }
+
+        renderSliders();
+        updateUI();
+    </script>
+</body>
+</html>
